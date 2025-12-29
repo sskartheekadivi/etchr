@@ -1,0 +1,38 @@
+[package]
+name = "etchr"
+description = "A fast, safe, and interactive CLI for flashing disk images. The command-line front-end for the etchr utility."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+readme = "README.md"
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+authors.workspace = true
+
+[dependencies]
+etchr-core = { path = "../etchr-core" }
+clap = { version = "4.5.43", features = ["derive"] }
+anyhow = "1.0"
+console = "0.16.0"
+indicatif = "0.18.0"
+dialoguer = "0.12.0"
+ctrlc = "3.5.1"
+
+[target.'cfg(unix)'.dependencies]
+termios = "0.3.3"
+libc = "0.2.174"
+
+[package.metadata.deb]
+maintainer = "Your Name <your.email@example.com>"
+copyright = "2024, Your Name <your.email@example.com>"
+license-file = "../LICENSE"
+extended-description = """\\
+A fast, safe, and interactive CLI for flashing disk images.
+The command-line front-end for the etchr utility."""
+depends = "$auto"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/etchr", "/usr/bin/", "755"],
+]

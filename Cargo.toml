@@ -1,30 +1,20 @@
-[package]
-name = "etchr"
+[workspace]
+resolver = "2"
+members = [
+    "etchr",
+    "etchr-core",
+]
+
+[workspace.package]
+authors = ["Sai Sree Kartheek Adivi <sskartheekadivi@gmail.com>"]
+description = "A fast, safe, and interactive CLI for flashing disk images, with a decoupled core library."
 version = "1.0.0"
 edition = "2024"
 license = "MIT"
-description = "A fast, safe, and interactive CLI for flashing disk images."
 readme = "README.md"
 repository = "https://github.com/sskartheekadivi/etchr"
 keywords = ["flasher", "usb", "sdcard", "image", "cli"]
 categories = ["command-line-utilities", "hardware-support"]
 
-[dependencies]
-clap = { version = "4.5.43", features = ["derive"] }
-anyhow = "1.0"
-console = "0.16.0"
-indicatif = "0.18.0"
-libc = "0.2.174"
-sha2 = "0.10.9"
-nix = { version = "0.30.1", features = ["ioctl"] }
-flate2 = "1.0"
-xz2 = "0.1"
-zstd = "0.13"
-tempfile = "3"
-sysinfo = "0.37.2"
-dialoguer = "0.12.0"
-ctrlc = "3.5.1"
-termios = "0.3.3"
-
-[package.metadata.deb]
+[workspace.metadata.deb]
 maintainer = "Sai Sree Kartheek Adivi <sskartheekadivi@gmail.com>"

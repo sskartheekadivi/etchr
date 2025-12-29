@@ -1,35 +1,51 @@
-name: Build test
+name: Build and Tag
 
 on:
   push:
     branches:
       - master
-    tags:
-      - 'v*'
   pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Needed for pushing tags
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history to check for version changes and tags
 
       - name: Install dependencies
         run: |
           cargo install cargo-deb
 
-      - name: Build binary
-        run: |
-          cargo build
-
       - name: Build deb package
         run: |
-          cargo deb
+          cargo deb -p etchr
 
       - name: Upload deb package to artifacts
         uses: actions/upload-artifact@v4
         with:
           path: target/debian/*.deb
+
+      - name: Tag release if version changed
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          VERSION="v$(grep '^version.workspace' Cargo.toml | sed 's/version.workspace = "\(.*\)"/\1/')"
+          if git ls-remote --tags origin | grep -q "refs/tags/${VERSION}$"; then
+              echo "Tag ${VERSION} already exists remotely. Skipping."
+              exit 0
+          fi
+          # Check if the version line in the root Cargo.toml was changed in the last commit.
+          # We use `git diff` on the last commit for the specific file and line.
+          if git diff HEAD~1 HEAD -- "Cargo.toml" | grep -q '^\+version.workspace'; then
+              echo "Version has been updated to ${VERSION}. Creating and pushing tag."
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git tag "${VERSION}" -m "Release ${VERSION}"
+              git push origin "${VERSION}"
+          else
+              echo "Version was not updated in this commit. No tag will be created."
+          fi

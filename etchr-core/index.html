@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>etchr Ultimate Identity Matrix</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=JetBrains+Mono:wght@800&family=Space+Mono:wght@700&display=swap"
+    rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=mona-sans@800,900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --rust-orange: #E06C4D;
+      --cyber-green: #00FF41;
+      --electric-blue: #4D9FFF;
+      --terminal-gray: #888888;
+    }
+
+    body {
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    /* The Grid System */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      /* Black vs White columns */
+      gap: 20px;
+    }
+
+    .column-header {
+      text-align: center;
+      font-weight: bold;
+      padding: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.8rem;
+    }
+
+    /* Logo Row - contains all accent variants for a specific font/bg */
+    .logo-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      /* 4 Accents: Rust, Green, Blue, Gray */
+      gap: 10px;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .bg-black {
+      background-color: #000000;
+      color: #ffffff;
+    }
+
+    .bg-white {
+      background-color: #ffffff;
+      color: #000000;
+      border: 1px solid #eee;
+    }
+
+    /* Typography */
+    .logo-box {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .logo-text {
+      font-size: 1.8rem;
+      white-space: nowrap;
+      margin-bottom: 5px;
+    }
+
+    .caption {
+      font-size: 0.6rem;
+      opacity: 0.5;
+      text-transform: uppercase;
+    }
+
+    /* Accents */
+    .acc-rust {
+      color: var(--rust-orange);
+    }
+
+    .acc-green {
+      color: var(--cyber-green);
+    }
+
+    .acc-blue {
+      color: var(--electric-blue);
+    }
+
+    .acc-gray {
+      color: var(--terminal-gray);
+    }
+
+    /* Cursor Animation */
+    .blink {
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+
+    /* Fonts */
+    .jb {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.04em;
+    }
+
+    .ibm {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .space {
+      font-family: 'Space Mono', monospace;
+    }
+
+    .mona {
+      font-family: 'Mona Sans', sans-serif;
+      text-transform: lowercase;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>etchr Brand Identity Exploration</h1>
+  <p>Exhaustive matrix of font, background, accent color, and cursor variants.</p>
+
+  <div id="matrix-container"></div>
+
+  <script>
+    const fonts = [
+      {id: 'jb', name: 'JetBrains Mono (Professional / Clean)'},
+      {id: 'ibm', name: 'IBM Plex Mono (Industrial / Technical)'},
+      {id: 'mona', name: 'Mona Sans (Modern / Accessible)'},
+      {id: 'space', name: 'Space Mono (Brutalist / Hacker)'}
+    ];
+
+    const accents = [
+      {class: 'acc-rust', name: 'Rust'},
+      {class: 'acc-green', name: 'Green'},
+      {class: 'acc-blue', name: 'Blue'},
+      {class: 'acc-gray', name: 'Gray'}
+    ];
+
+    const cursors = ['█', '_'];
+
+    let html = '';
+
+    fonts.forEach(font => {
+      html += `<div class="section">
+                        <h2>${font.name}</h2>
+                        <div class="grid">
+                            <div class="column-header">Black Background (Dark Mode)</div>
+                            <div class="column-header">White Background (Light Mode)</div>
+                        </div>`;
+
+      cursors.forEach(cursor => {
+        html += `<h3 style="font-size: 0.9rem; margin: 20px 0 10px 0; color: #666;">Variant: ${cursor === '█' ? 'Block' : 'Underscore'} Cursor</h3>
+                         <div class="grid">`;
+
+        // Black Background Row
+        html += `<div class="logo-row bg-black">`;
+        accents.forEach(acc => {
+          html += `<div class="logo-box">
+                                <div class="logo-text ${font.id}">etch<span class="${acc.class}">r</span><span class="${acc.class} blink">${cursor}</span></div>
+                                <div class="caption">${acc.name}</div>
+                             </div>`;
+        });
+        html += `</div>`;
+
+        // White Background Row
+        html += `<div class="logo-row bg-white">`;
+        accents.forEach(acc => {
+          html += `<div class="logo-box">
+                                <div class="logo-text ${font.id}">etch<span class="${acc.class}">r</span><span class="${acc.class} blink">${cursor}</span></div>
+                                <div class="caption">${acc.name}</div>
+                             </div>`;
+        });
+        html += `</div>`;
+
+        html += `</div>`; // close grid
+      });
+
+      html += `</div>`; // close section
+    });
+
+    document.getElementById('matrix-container').innerHTML = html;
+  </script>
+</body>
+
+</html>

@@ -1,136 +1,57 @@
 # etchr
 
-<p align="center">
-  </p>
-
-<h3 align="center">A fast, safe, and interactive CLI for flashing disk images.</h3>
+<h3 align="center">A fast, safe, and modular disk imaging utility.</h3>
 
 <p align="center">
   Tired of cryptic `dd` commands? Worried you'll accidentally wipe your system drive?
   <br />
-  <code>etchr</code> is a modern, reliable tool that makes flashing SD cards and USB drives simple and safe, right from your terminal.
-</p>
-
-<p align="center">
-  
+  <code>etchr</code> is a modern, reliable tool that makes flashing SD cards and USB drives simple and safe. It is built as a modular workspace containing a core library and a command-line front-end.
 </p>
 
 ---
 
-## ✨ Features
+This repository is a Cargo workspace containing the following crates:
 
-* **🛡️ Interactive Safety First**
-    `etchr` doesn't let you pass a device path. Instead, it shows an interactive menu of **only removable devices**, making it nearly impossible to flash your system drive by mistake.
+* [`etchr`](./etchr/README.md): A fast, safe, and interactive CLI for flashing disk images. This is the crate most users will interact with.
+* [`etchr-core`](./etchr-core/README.md): The core, UI-agnostic library for `etchr`. It provides the business logic for device discovery, reading, and writing, and can be used by any front-end.
 
-* **🚀 Decompression On-the-Fly**
-    Automatically decompresses `.gz`, `.xz`, and `.zst` images while writing. No need to extract them first.
+## 🚀 Installation & Usage
 
-* **⚡ Blazingly Fast**
-    Optimized for high-speed, unbuffered I/O to flash images as fast as your hardware allows, often faster than GUI-based tools.
+For most users, you will want to install and use the command-line application, `etchr`.
 
-* **✅ Guaranteed Verification**
-    Automatically verifies the disk with a SHA256 hash after writing to ensure the data is perfect, bit-for-bit. (You can skip this with `--no-verify`).
+Please see the [**`etchr` README**](./etchr/README.md) for detailed installation and usage instructions.
 
-* **📊 Detailed Progress**
-    A beautiful progress bar shows your speed, data transferred, and ETA, so you're never left guessing.
+A quick-start for installation is:
 
-* **🛑 Graceful Cancel**
-    Press `Ctrl+C` at any time to safely cancel the operation. `etchr` cleans up after itself, leaving no temporary files or half-written states.
-
-## 🚀 Installation
-
-### 1. With `cargo` (Recommended)
-This is the easiest way to get the latest version if you have the Rust toolchain.
 ```bash
 cargo install etchr
 ```
 
-### 2. From GitHub Releases
-Download the pre-compiled binary or `.deb` package from the [Releases page](https://github.com/sskartheekadivi/etchr/releases).
-```bash
-# For .deb packages
-sudo dpkg -i ./etchr_1.0.0_amd64.deb
-```
+## ✨ Project Goals
 
-### 3. From Source
-```bash
-git clone [https://github.com/sskartheekadivi/etchr.git](https://github.com/sskartheekadivi/etchr.git)
-cd etchr
-cargo build --release
-sudo cp ./target/release/etchr /usr/local/bin/
-```
-
-## 💡 Usage
-
-`etchr` is designed to be simple. The commands guide you.
-
-### `etchr list`
-List all detected removable devices and their mount points.
-```
-$ etchr list
-Found 1 removable devices:
-
-  DEVICE       NAME                 SIZE LOCATION
-  ----------   -----------------   ----- ----------
-  /dev/sdd     Cruzer Blade       29.5 GB /media/user/USB_DISK
-```
-
-### `etchr write`
-Write an image to a device. You will be prompted to select a target from a safe, interactive list.
-```bash
-# You can use compressed or uncompressed images
-etchr write ~/Downloads/raspberry-pi-os.img.xz
-```
-This will start the interactive prompt:
-```
-✔ Select the target device to WRITE to · /dev/sdd     29.5 GB [Mounted at /media/user/USB_DISK]
-WARNING: This will erase all data on 'sdd' (29.5 GB).
-  Device: /dev/sdd
-  Image:  /home/user/Downloads/raspberry-pi-os.img.xz
-
-✔ Are you sure you want to proceed? · yes
-
-Writing image...
-Decompress [■■■■■■■■■■■■■■■■■] 1.53 GiB (150.37 MiB/s)
-Writing    [■■■■■■■■■■■■■■■■■] 8.00 GiB (90.12 MiB/s)
-Verifying  [■■■■■■■■■■■■■■■■■] 8.00 GiB (133.33 MiB/s)
-
-✨ Successfully flashed /dev/sdd with raspberry-pi-os.img.xz.
-```
-
-**Options:**
-* `--no-verify`: Skips the verification step after writing.
-
-### `etchr read`
-Create an image file by reading an entire device. You will be prompted to select a source.
-```bash
-etchr read ~/Backups/my-sd-card-backup.img
-```
-This will start the interactive prompt:
-```
-✔ Select the source device to READ from · /dev/sdd     29.5 GB [Mounted at /media/user/USB_DISK]
-This will read 29.5 GB from 'sdd'.
-  Device: /dev/sdd
-  Output: /home/user/Backups/my-sd-card-backup.img
-
-✔ Are you sure you want to proceed? · yes
-
-Reading    [■■■■■■■■■■■■■■■■■] 29.5 GiB (100.0 MiB/s)
-
-✨ Successfully read /dev/sdd to my-sd-card-backup.img.
-```
+* **Modularity:** The core logic is completely decoupled from the UI, allowing for different front-ends (CLI, GUI) to be built on the same foundation.
+* **Safety:** The primary goal is to prevent users from accidentally wiping the wrong disk. The interactive-only device selection is a key part of this.
+* **Performance:** Use unbuffered, direct I/O where possible to achieve the best possible speeds.
+* **Cross-Platform:** The architecture is designed to support multiple operating systems (Linux, Windows, macOS) by abstracting platform-specific code into a dedicated layer.
 
 ## 🗺️ Roadmap
 
-`etchr` is already a powerful tool, but here's what's planned:
-
+* [x] Refactor into a `core` library and a `cli` application.
+* [ ] Add full implementation for Windows device discovery.
+* [ ] Add implementation for macOS device discovery.
+* [ ] Add a `etchr-gui` crate using a framework like [Tauri](https://tauri.app/) or [Iced](https://github.com/iced-rs/iced).
 * [ ] Smarter reading (e.g., only reading partitions, not the whole empty disk).
 * [ ] Multi-write: Flashing one image to multiple devices at once.
-* [ ] A (separate) optional GUI frontend.
 
 ## Contributing
 
-Contributions are welcome! Whether it's a bug report, a feature idea, or a pull request, feel free to open an issue or start a discussion.
+Contributions are welcome! This project is structured as a workspace. Please make sure your changes are made in the appropriate crate.
+
+* For changes to the core logic (reading, writing, verification, platform support), please contribute to `etchr-core`.
+* For changes to the command-line interface (parsing, prompts, output), please contribute to `etchr`.
+
+Feel free to open an issue or start a discussion.
 
 ## License
+
 This project is licensed under the MIT License.
