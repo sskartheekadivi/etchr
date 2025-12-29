@@ -21,13 +21,17 @@ jobs:
         run: |
           cargo deb -p etchr
 
+      - name: Get deb file path
+        id: deb-path
+        run: echo "path=$(find target/debian -name "*.deb")" >> $GITHUB_OUTPUT
+
       - name: Archive Debian package
         uses: actions/upload-artifact@v4
         with:
           name: etchr-deb
-          path: target/debian/*.deb
+          path: ${{ steps.deb-path.outputs.path }}
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: target/debian/*.deb
+          files: ${{ steps.deb-path.outputs.path }}
