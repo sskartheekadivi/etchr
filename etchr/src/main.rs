@@ -173,9 +173,25 @@ fn main() -> Result<()> {
             println!();
 
             // Set up progress bars for the multi-stage write process.
-            let decompress_pb = ProgressBar::new_spinner();
+            // Conditionally create progress bars so they don't flash on screen if not needed.
+            let is_compressed = image.extension().and_then(|e| e.to_str()).map_or(false, |e| {
+                matches!(e.to_lowercase().as_str(), "gz" | "gzip" | "xz" | "zst" | "zstd")
+            });
+
+            let decompress_pb = if is_compressed {
+                ProgressBar::new_spinner()
+            } else {
+                ProgressBar::hidden()
+            };
+
             let write_pb = ProgressBar::new(0);
-            let verify_pb = ProgressBar::new(0);
+
+            let verify_pb = if !no_verify {
+                ProgressBar::new(0)
+            } else {
+                ProgressBar::hidden()
+            };
+
 
             // These closures connect the core library's progress reporting to our UI.
             let on_decompress_start = || {
@@ -330,7 +346,9 @@ fn main() -> Result<()> {
             let on_decompress_progress = |bytes| decompress_pb.set_position(bytes);
 
             let on_write_start = |len| {
-                decompress_pb.finish_with_message("Decompression complete.");
+                if is_compressed {
+                    decompress_pb.finish_with_message("Decompression complete.");
+                }
                 write_pb.set_length(len);
                 write_pb.set_prefix("Writing");
                 write_pb.set_style(
@@ -390,9 +408,13 @@ fn main() -> Result<()> {
                 }
                 Err(e) => {
                     // On error, finish all bars with a failure message to unblock the terminal.
-                    decompress_pb.finish_with_message("❌ Operation failed.");
+                    if is_compressed {
+                        decompress_pb.finish_with_message("❌ Operation failed.");
+                    }
                     write_pb.finish_and_clear();
-                    verify_pb.finish_and_clear();
+                    if !no_verify {
+                        verify_pb.finish_and_clear();
+                    }
                     return Err(e);
                 }
             }

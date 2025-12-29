@@ -8,7 +8,7 @@ members = [
 [workspace.package]
 authors = ["Sai Sree Kartheek Adivi <sskartheekadivi@gmail.com>"]
 description = "A fast, safe, and interactive CLI for flashing disk images, with a decoupled core library."
-version = "1.0.0"
+version = "1.0.1"
 edition = "2024"
 license = "MIT"
 readme = "README.md"

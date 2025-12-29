@@ -33,14 +33,14 @@ jobs:
       - name: Tag release if version changed
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
-          VERSION="v$(grep '^version.workspace' Cargo.toml | sed 's/version.workspace = "\(.*\)"/\1/')"
+          VERSION="v$(grep '^version' Cargo.toml | sed 's/version = "\(.*\)"/\1/')"
           if git ls-remote --tags origin | grep -q "refs/tags/${VERSION}$"; then
               echo "Tag ${VERSION} already exists remotely. Skipping."
               exit 0
           fi
           # Check if the version line in the root Cargo.toml was changed in the last commit.
           # We use `git diff` on the last commit for the specific file and line.
-          if git diff HEAD~1 HEAD -- "Cargo.toml" | grep -q '^\+version.workspace'; then
+          if git diff HEAD~1 HEAD -- "Cargo.toml" | grep -q '^\+version'; then
               echo "Version has been updated to ${VERSION}. Creating and pushing tag."
               git config user.name "github-actions[bot]"
               git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
